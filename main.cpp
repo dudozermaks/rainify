@@ -11,52 +11,11 @@
 
 // for wchar characters
 #include <clocale>
-// rand
-#include <random>
 
-const int FPS = 40;
-const float CYCLE_DURATION = 1000.0/FPS;
-
-const size_t drop_shapes_count = 9;
-const wchar_t drop_shapes[drop_shapes_count] = {L'┃', L'┇', L'┋', L'╹', L'╻', L'│', L'┆', L'┊', L'╵'};
+#include "definition.hpp"
+#include "drop.hpp"
 
 struct winsize w;
-
-struct cords{
-  float x,y;
-};
-
-class Drop{
-private:
-  cords pos;
-  float mass;
-  // for correct ncurses printing
-  // character[0] = character
-  // character[1] = L'\0'
-  wchar_t character[2];
-  void generate(){
-    pos.x = rand() % (w.ws_col + 1); // rand % (max - min + 1) + min; min = 0; max = w.ws_col
-    pos.y = rand() % (w.ws_row + 1) - w.ws_row;
-
-    double random_ratio = static_cast<double>(rand()) / RAND_MAX;
-    mass = 40 * (random_ratio / 2 + 0.5) / FPS; // 40 * (0.5, 1] / FPS
-    character[0] = drop_shapes[static_cast<int>(drop_shapes_count - random_ratio * drop_shapes_count)];
-    character[1] = L'\0';
-  }
-public:
-  Drop(){
-    generate();
-  }
-  void update(){
-    if (pos.y > w.ws_row){
-      generate();
-    }
-    pos.y += mass;
-  }
-  void draw(){
-    mvaddwstr(pos.y, pos.x, character);
-  }
-};
 
 void update_size(int sig=0){
   ioctl(STDOUT_FILENO, TIOCGWINSZ, &w); // bind winsize variable
@@ -78,7 +37,7 @@ int main (int argc, char *argv[]){
 
   std::vector<Drop> drops;
   for(int i=0; i<100; i++){
-    drops.push_back({});
+    drops.push_back({w});
   }
 
   while (true) {
@@ -94,7 +53,7 @@ int main (int argc, char *argv[]){
     // *******
     // update
     for(auto& drop : drops){
-      drop.update();
+      drop.update(w);
     }
     // draw
     clear();
