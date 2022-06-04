@@ -1,4 +1,7 @@
 # No rain outside the window? Rainify is your solution!
+## Demonstration
+![Demonstration](https://github.com/dudozermaks/dudozermaks.github.io/blob/master/assets/gifs/rainify_1.0.0.gif)
+> Gif is compressed and FPS downgraded
 ## How-to build and run:
 ### To build:
 1. Clone repo
