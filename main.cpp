@@ -12,16 +12,42 @@
 // for wchar characters
 #include <clocale>
 
+#include <stdexcept>
+
 #include "definition.hpp"
 #include "drop.hpp"
 
 struct winsize w;
+
+int FPS = 40;
+float CYCLE_DURATION = 1000.0/FPS;
 
 void update_size(int sig=0){
   ioctl(STDOUT_FILENO, TIOCGWINSZ, &w); // bind winsize variable
 }
 
 int main (int argc, char *argv[]){
+  for (int i=1; i<argc; i++){
+    std::string arg = argv[i];
+    if (arg == "--fps"){
+      if (i+1 < argc){
+        std::string fps_count = argv[++i];
+        try{
+          FPS = std::stoi(fps_count);
+          if (FPS > 60 || FPS < 10){
+            throw std::invalid_argument("--fps argument must be between 10 and 60");
+          }
+          CYCLE_DURATION = 1000.0 / FPS;
+        } catch(std::exception& e){
+          printf("--fps argument must be an integer between 10 and 60");
+          exit(-1);
+        }
+      }else{
+        printf("--fps requires one argument like this: --fps 10\n");
+        exit(-1);
+      }
+    }
+  }
   // for FPS
   auto start_cycle = std::chrono::system_clock::now();
   auto end_cycle = std::chrono::system_clock::now();
@@ -35,9 +61,10 @@ int main (int argc, char *argv[]){
 
   srand(time(NULL));
 
+  Drop::setup_color();
   std::vector<Drop> drops;
   for(int i=0; i<100; i++){
-    drops.push_back({w});
+    drops.push_back({w, FPS});
   }
 
   while (true) {
