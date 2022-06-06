@@ -5,9 +5,9 @@
 
 > Gif is compressed and FPS downgraded
 
-## How-to build and run:
+## How-to build and run (no Windows because of ncurses):
 
-### To build (no Windows because of ncurses):
+### To build:
 
 Deps:
 
