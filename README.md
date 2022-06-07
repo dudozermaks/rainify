@@ -12,7 +12,7 @@
 Deps:
 
 * [CMake](https://cmake.org/)
-* [ncurses](https://ru.wikipedia.org/wiki/Ncurses) (most unix-based systems already have)
+* [ncurses](https://en.wikipedia.org/wiki/Ncurses) (most unix-based systems already have)
 
 1. Clone repo
 2. Go to repo dir
@@ -23,3 +23,8 @@ Deps:
 ### To run:
 
 1. `./build/main`
+
+---
+
+Args parser with [argpars](https://github.com/p-ranav/argparse)
+TUI (text user interface) with [ncurses](https://en.wikipedia.org/wiki/Ncurses)

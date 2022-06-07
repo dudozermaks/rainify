@@ -1,4 +1,5 @@
 #include <curses.h> // output
+#include "argparse_2.5.hpp" // args
 // FPS
 #include <chrono>
 #include <thread>
@@ -19,49 +20,64 @@
 
 struct winsize w;
 
-int FPS = 40;
-float CYCLE_DURATION = 1000.0/FPS;
-
 void update_size(int sig=0){
   ioctl(STDOUT_FILENO, TIOCGWINSZ, &w); // bind winsize variable
 }
 
 int main (int argc, char *argv[]){
-  for (int i=1; i<argc; i++){
-    std::string arg = argv[i];
-    if (arg == "--fps"){
-      if (i+1 < argc){
-        std::string fps_count = argv[++i];
-        try{
-          FPS = std::stoi(fps_count);
-          if (FPS > 60 || FPS < 10){
-            throw std::invalid_argument("--fps argument must be between 10 and 60");
-          }
-          CYCLE_DURATION = 1000.0 / FPS;
-        } catch(std::exception& e){
-          printf("--fps argument must be an integer between 10 and 60");
-          exit(-1);
-        }
-      }else{
-        printf("--fps requires one argument like this: --fps 10\n");
-        exit(-1);
-      }
+  argparse::ArgumentParser arg_parser("rainify", "2.0.0");
+
+  arg_parser.add_argument("--fps")
+    .help("set fps (between 10 and 60)")
+    .scan<'i', int>()
+    .default_value(40);
+
+  arg_parser.add_argument("--nocolor")
+    .help("set monochrome")
+    .default_value(false)
+    .implicit_value(true); // when program runs with --nocolor, then arg_parser["--nocolor"] == true
+
+  
+  try {
+    arg_parser.parse_args(argc, argv);
+  }
+  catch (const std::runtime_error& err) {
+    std::cerr << err.what() << std::endl;
+    std::cerr << arg_parser;
+    exit(1);
+  }
+
+
+  int FPS;
+  float CYCLE_DURATION;
+  {
+    auto possible_fps = arg_parser.get<int>("--fps"); // the default value is 40
+    if (possible_fps >= 10 && possible_fps <= 60){
+      FPS = possible_fps;
+      CYCLE_DURATION = 1000.0 / FPS;
+    }else{
+      std::cerr << "--fps must be between 10 and 60";
+      exit(1);
     }
   }
+
   // for FPS
   auto start_cycle = std::chrono::system_clock::now();
   auto end_cycle = std::chrono::system_clock::now();
   // *******
   update_size(); // load size into w
   std::signal(SIGWINCH, update_size); // bind signal window change to function update_size
-  std::setlocale(LC_ALL, "");
+  std::setlocale(LC_ALL, ""); // for wchar_t works fine with ncurses
   initscr();   // init ncurses 
   curs_set(0); // cursor invisible
   noecho();    // input invisible
 
   srand(time(NULL));
 
-  Drop::setup_color();
+  if (arg_parser["--nocolor"] == false){ // if (!arg_parser["--nocolor"]) doesn`t work
+    Drop::setup_color();
+  }
+
   std::vector<Drop> drops;
   for(int i=0; i<100; i++){
     drops.push_back({w, FPS});
