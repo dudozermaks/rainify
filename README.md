@@ -27,4 +27,4 @@ Deps:
 ---
 
 Args parser with [argpars](https://github.com/p-ranav/argparse) <br/>
-TUI (text user interface) with [ncurses](https://en.wikipedia.org/wiki/Ncurses)
+Draw in terminal with [ncurses](https://en.wikipedia.org/wiki/Ncurses)
