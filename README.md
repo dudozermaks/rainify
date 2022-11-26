@@ -11,7 +11,7 @@ Deps:
 
 * [CMake](https://cmake.org/)
 * [ncurses](https://en.wikipedia.org/wiki/Ncurses) (most unix-based systems already have)
-
+---
 1. Clone repo
 2. Go to repo dir
 3. `mkdir build && cd build`
