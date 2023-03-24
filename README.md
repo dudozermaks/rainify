@@ -12,8 +12,8 @@ Deps:
 * [CMake](https://cmake.org/)
 * [ncurses](https://en.wikipedia.org/wiki/Ncurses) (most unix-based systems already have)
 ---
-1. 'gh repo clone dudozermaks/rainify'
-2. 'cd rainify'
+1. `gh repo clone dudozermaks/rainify`
+2. `cd rainify`
 3. `mkdir build && cd build`
 4. `cmake ..`
 5. `cd .. && cmake --build build/`
